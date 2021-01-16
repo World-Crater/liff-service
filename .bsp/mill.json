@@ -1,0 +1,1 @@
+{"name":"mill-bsp","argv":["/Users/yorklin/.mill/download/0.9.4","-i","--disable-ticker","--color","false","mill.bsp.BSP/start"],"millVersion":"0.9.4","bspVersion":"2.0.0","languages":["scala","java"]}
