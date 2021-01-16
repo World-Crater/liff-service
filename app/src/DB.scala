@@ -8,9 +8,9 @@ object pgconn extends App {
   classOf[org.postgresql.Driver]
   private def conn =
     DriverManager.getConnection(
-      s"jdbc:postgresql://${Properties.envOrElse("DB_HOST", "localhost:5432")}/${Properties
-        .envOrElse("DB_NAME", "")}?user=${Properties.envOrElse("DB_USER", "")}&password=${Properties
-        .envOrElse("DB_PASSWORD", "")}"
+      s"jdbc:postgresql://${Properties.envOrElse("DB_HOST", "host")}/${Properties
+        .envOrElse("DB_NAME", "name")}?user=${Properties.envOrElse("DB_USER", "user")}&password=${Properties
+        .envOrElse("DB_PASSWORD", "password")}"
     )
   private def stm: Try[Statement] =
     Try(
