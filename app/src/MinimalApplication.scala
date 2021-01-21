@@ -43,8 +43,14 @@ object MinimalApplication extends cask.MainRoutes {
   def deleteFavorite(accountId: String, infoId: String) = {
     //yorktodo思考如何回傳成功與否
     deleteFavoriteByInfoId(accountId, infoId) match {
-      case Right(_) => "OK"
-      case Left(_)  => "Forbidden"
+      case Right(result) =>
+        result match {
+          case 0 => "Delete 0 favorite"
+          case 1 => "Delete 1 favorite"
+        }
+      case Left(err) => {
+        "Forbidden"
+      }
     }
   }
 
@@ -69,6 +75,7 @@ object MinimalApplication extends cask.MainRoutes {
     }
   }
 
+  // yorktodo:創建完畢後回傳實體
   @cask.postJson("/profile")
   def createProfile(
       access_token: ujson.Value,

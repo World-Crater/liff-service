@@ -156,10 +156,10 @@ object pgconn extends App {
   def deleteFavoriteByInfoId(
       accountId: String,
       infoId: String
-  ): Either[Throwable, ResultSet] =
+  ): Either[Throwable, Int] =
     stm.flatMap(executor =>
       Try(
-        executor.executeQuery(
+        executor.executeUpdate(
           s"DELETE FROM facefavorites WHERE account_id = '$accountId' AND info_id = '$infoId'"
         )
       ).toEither
