@@ -82,19 +82,16 @@ object MinimalApplication extends cask.MainRoutes {
       access_token: ujson.Value,
       liffid: ujson.Value
   ) = {
-    (if (liffid == "1655529572-4Dy9PYD3" || liffid == "1655529572-bv0kM39q")
-       Right()
-     else Left())
-      .flatMap(_ =>
-        Try(
-          requests.get(
-            s"https://api.line.me/oauth2/v2.1/verify?access_token=${access_token.value}"
-          )
-        ).toEither
+    Try(
+      requests.get(
+        s"https://api.line.me/oauth2/v2.1/verify?access_token=${access_token.value}"
       )
+    ).toEither
       .flatMap(value =>
         Either.cond(
-          value.statusCode == 200,
+          value.statusCode == 200 && ujson
+            .read(value.text())("client_id")
+            .str == "1655529572",
           value,
           RequestException("RequestError")
         )
