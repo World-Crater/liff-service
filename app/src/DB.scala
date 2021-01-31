@@ -38,8 +38,8 @@ object pgconn extends App {
   private def conn =
     DriverManager.getConnection(
       s"jdbc:postgresql://${Properties.envOrElse("DB_HOST", "localhost:5432")}/${Properties
-        .envOrElse("DB_NAME", "messfar")}?user=${Properties.envOrElse("DB_USER", "yorklin")}&password=${Properties
-        .envOrElse("DB_PASSWORD", "nNpR3VVVxsI8S1tfGNBo")}"
+        .envOrElse("DB_NAME", "")}?user=${Properties.envOrElse("DB_USER", "")}&password=${Properties
+        .envOrElse("DB_PASSWORD", "")}"
     )
   // yorktodo測試速錯
   private def stm =
@@ -53,6 +53,9 @@ object pgconn extends App {
     conn.close()
     System.exit(1)
   }
+
+  def getStringWithDefault(default: String) =
+    (value: String) => if (value == null) default else value
 
   def insertProfile(
       userId: String,
@@ -138,16 +141,18 @@ object pgconn extends App {
           new ArrayBuffer[ujson.Obj](
             rs.getMetaData().getColumnCount()
           )
+        // yorktodo思考可不可以不擁有此變數
+        val getStringWithEmptyString = getStringWithDefault("")
         while (rs.next()) {
           // yorktodo可以封裝方法
           resultList += ujson.Obj(
             "id" -> rs.getInt("id"),
-            "name" -> rs.getString("name"),
-            "preview" -> rs.getString("preview"),
-            "detail" -> rs.getString("detail"),
-            "romanization" -> (
-                (value: String) => (if (value == null) "" else value)
-            )(rs.getString("romanization"))
+            "name" -> getStringWithEmptyString(rs.getString("name")),
+            "preview" -> getStringWithEmptyString(rs.getString("preview")),
+            "detail" -> getStringWithEmptyString(rs.getString("detail")),
+            "romanization" -> getStringWithEmptyString(
+              rs.getString("romanization")
+            )
           )
         }
         resultList
