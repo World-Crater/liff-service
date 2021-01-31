@@ -9,6 +9,7 @@ import app.pgconn.{
   insertProfile
 }
 
+import scala.Right
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Try
 
@@ -80,12 +81,17 @@ object MinimalApplication extends cask.MainRoutes {
   def createProfile(
       access_token: ujson.Value,
       liffid: ujson.Value
-  ) =
-    Try(
-      requests.get(
-        s"https://api.line.me/oauth2/v2.1/verify?access_token=${access_token.value}"
+  ) = {
+    (if (liffid == "1655529572-4Dy9PYD3" || liffid == "1655529572-bv0kM39q")
+       Right()
+     else Left())
+      .flatMap(_ =>
+        Try(
+          requests.get(
+            s"https://api.line.me/oauth2/v2.1/verify?access_token=${access_token.value}"
+          )
+        ).toEither
       )
-    ).toEither
       .flatMap(value =>
         Either.cond(
           value.statusCode == 200,
@@ -132,6 +138,7 @@ object MinimalApplication extends cask.MainRoutes {
       case Left(_) =>
         cask.Response(Map("error" -> "Forbidden"), statusCode = 403)
     }
+  }
 
   initialize()
 }
