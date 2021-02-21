@@ -105,29 +105,37 @@ object MinimalApplication extends cask.MainRoutes {
         ).toEither
       )
       .map(response => ujson.read(response.text()))
+      .map(profileResponse =>
+        Map(
+          "userId" -> profileResponse("userId").str,
+          "displayName" -> profileResponse("displayName").str,
+          "pictureUrl" -> Try(profileResponse("pictureUrl").str)
+            .getOrElse("")
+        )
+      )
       .flatMap(profileResponse =>
         // yorktodo:workaround 如果insert失敗應該要update
-        insertAccountIfLineProfileNotExist(profileResponse("userId").str)
+        insertAccountIfLineProfileNotExist(profileResponse("userId"))
           .flatMap {
             case Some(accountId) =>
               insertProfile(
-                profileResponse("userId").str,
-                profileResponse("displayName").str,
-                profileResponse("pictureUrl").str,
+                profileResponse("userId"),
+                profileResponse("displayName"),
+                profileResponse("pictureUrl"),
                 liffid.str,
                 accountId
               ).map(_ => (profileResponse, accountId))
             case None =>
-              getAccountIdByLineId(profileResponse("userId").str)
+              getAccountIdByLineId(profileResponse("userId"))
                 .map(accountId => (profileResponse, accountId))
           }
       ) match {
       case Right((profileResponse, accountId)) =>
         cask.Response(
           Map(
-            "userId" -> profileResponse("userId").str,
-            "displayName" -> profileResponse("displayName").str,
-            "pictureUrl" -> profileResponse("pictureUrl").str,
+            "userId" -> profileResponse("userId"),
+            "displayName" -> profileResponse("displayName"),
+            "pictureUrl" -> profileResponse("pictureUrl"),
             "accountId" -> accountId
           ),
           statusCode = 200
