@@ -1,4 +1,4 @@
-FROM mkotsur/scala-mill:latest AS build
+FROM nightscape/scala-mill:latest AS build
 WORKDIR /app
 COPY . .
 RUN mill app.assembly

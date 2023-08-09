@@ -8,7 +8,7 @@ import app.pgconn.{
   insertFavorite,
   insertProfile
 }
-
+import scala.util.Properties
 import scala.Right
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Try
@@ -21,8 +21,9 @@ final case class RequestException(
 object MinimalApplication extends cask.MainRoutes {
   override def host: String = "0.0.0.0"
 
-  @cask.get("/")
+  @cask.get("/health")
   def index() = {
+    println("get health check")
     "OK"
   }
 
@@ -65,7 +66,8 @@ object MinimalApplication extends cask.MainRoutes {
           ),
           statusCode = 200
         )
-      case Left(_) =>
+      case Left(error) =>
+        System.err.println("get favorites error: ", error)
         cask.Response(
           //yorktodo:思考回傳值
           Map(
