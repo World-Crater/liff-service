@@ -50,13 +50,8 @@ object pgconn extends App {
       )
     ).toEither
   if (stm.isLeft) {
-    // println("york debug1: ", Properties.envOrElse("DB_HOST", "localhost:5432"))
-    // System.out.flush()
     conn.close()
     System.exit(1)
-  } else {
-    // println("york debug2: ", Properties.envOrElse("DB_HOST", "localhost:5432"))
-    // System.out.flush()
   }
 
   def getStringWithDefault(default: String) =
