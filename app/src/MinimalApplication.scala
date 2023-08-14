@@ -12,6 +12,8 @@ import scala.util.Properties
 import scala.Right
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Try
+import java.time.Instant;
+import java.time.Duration;
 
 final case class RequestException(
     private val message: String = "",
@@ -19,11 +21,17 @@ final case class RequestException(
 ) extends Exception(message, cause)
 
 object MinimalApplication extends cask.MainRoutes {
-  override def host: String = "0.0.0.0"
+  override val host: String = "0.0.0.0"
+  val lastTime: Instant = Instant.now();
 
   @cask.get("/health")
   def index() = {
     println("get health check")
+    val difference: Duration = Duration.between(lastTime, Instant.now());
+    if (difference.getSeconds() > 120) { // yorktodo workaround: too many sql client
+      println("restart server workaround")
+      System.exit(1)
+    }
     "OK"
   }
 
