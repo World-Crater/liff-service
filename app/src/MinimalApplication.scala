@@ -27,6 +27,12 @@ object MinimalApplication extends cask.MainRoutes {
   @cask.get("/health")
   def index() = {
     println("get health check")
+    "OK"
+  }
+
+  @cask.get("/reboot")
+  def reboot() = {
+    println("reboot")
     val difference: Duration = Duration.between(lastTime, Instant.now());
     if (difference.getSeconds() > 120) { // yorktodo workaround: too many sql client
       println("restart server workaround")
